@@ -13,7 +13,8 @@ final class MovieListViewModel {
     var bag = Set<AnyCancellable>()
     
     let networkManager: NetworkManager
-    var movieList = CurrentValueSubject<MovieList?, Never>(nil)
+    var movieList: MovieList?
+    var movie = CurrentValueSubject<[Movie], Never>([])
     var errorMessage = PassthroughSubject<String, Never>()
     
     var canFetchMore: Bool = true
@@ -40,23 +41,22 @@ final class MovieListViewModel {
         let endpoint = BaseRouter.getMovieList(currentPage)
         
         guard let url = URL(string: endpoint.url ) else {
-            fatalError("Cannot parse to url")            
+            fatalError("Cannot parse to url")
         }
         
         networkManager.request(fromURL: url) {  [weak self] (result: Result<MovieList, Error>) in
             guard let self = self else { return }
             switch result {
             case .success(let movieList):
+                self.movieList = movieList
                 self.canFetchMore = movieList.results.count == 20
-                var existingList = self.movieList.value?.results
+                var existingList = self.movie.value
                 if self.currentPage == 1 {
                     existingList = movieList.results
                 } else {
-                    existingList?.append(contentsOf: movieList.results)
-                    self.movieList.value?.results = existingList ?? []
-                }                
-                
-                self.movieList.send(movieList)
+                    existingList.append(contentsOf: movieList.results)
+                }
+                self.movie.send(existingList)
             case .failure(let error):
                 print(error)
             }

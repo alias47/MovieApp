@@ -17,13 +17,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = UIWindow(windowScene: windowScene)
 
         
-//        window = UIWindow(frame: UIScreen.main.bounds)
-//        window?.windowScene = windowScene
+        
         let view = MovieListView()
         let viewModel = MovieListViewModel(networkManager: NetworkManager.shareInstance)
-        var navVC = UINavigationController()
-        var controller = MovieListController(with: view, viewModel: viewModel)
-        navVC.viewControllers = [controller]
+        let controller = MovieListController(with: view, viewModel: viewModel)
+        let navVC = UINavigationController(rootViewController: controller)
+        navVC.navigationBar.tintColor = .black
+        navVC.navigationBar.prefersLargeTitles = true
+        navVC.navigationItem.largeTitleDisplayMode = .automatic
+        navVC.navigationBar.largeTitleTextAttributes = [.font: UIFont.systemFont(ofSize: 25)]
         window?.rootViewController = navVC
         window?.makeKeyAndVisible()
     }

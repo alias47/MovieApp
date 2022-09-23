@@ -13,8 +13,6 @@ final class MovieListController: UIViewController {
     private let screenView: MovieListView
     private let viewModel: MovieListViewModel
     
-    var color: [Int: UIColor?] = [:]
-    
     init(with view: MovieListView, viewModel: MovieListViewModel) {
         self.screenView = view
         self.viewModel = viewModel
@@ -39,20 +37,16 @@ final class MovieListController: UIViewController {
     
     private func setup() {
         setTableView()
-        navigationController?.navigationBar.tintColor = .black
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.largeTitleDisplayMode = .automatic
-        navigationController?.navigationBar.largeTitleTextAttributes = [.font: UIFont.systemFont(ofSize: 25)]
-        title = "Movie App"
     }
     
     private func setTableView() {
         screenView.tableView.delegate = self
         screenView.tableView.dataSource = self
+        title = "Movie App"
     }
     
     private func observeEvent() {
-        viewModel.movieList.dropFirst().sink { [weak self] movieList in
+        viewModel.movie.dropFirst().sink { [weak self] _ in
             guard let self = self else { return }
             self.screenView.tableView.tableFooterView = nil
             self.screenView.tableView.reloadData()
@@ -65,11 +59,11 @@ extension MovieListController: UITableViewDelegate, UITableViewDataSource {
     
     // MARK: TableView Cell
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.movieList.value?.results.count ?? 0
+        viewModel.movie.value.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let movie = viewModel.movieList.value?.results[indexPath.row]
+        let movie = viewModel.movie.value[indexPath.row]
         
         let cell = tableView.dequeueReusableCell(withIdentifier: MovieListTableViewCell.identifier, for: indexPath) as! MovieListTableViewCell
         cell.configure(movie: movie)
@@ -77,7 +71,7 @@ extension MovieListController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let movieId = viewModel.movieList.value?.results[indexPath.row].id else { return }
+        let movieId = viewModel.movie.value[indexPath.row].id
         let view = MovieDetailView()
         let viewModel = MovieDetailViewModel(networkManager: viewModel.networkManager, movieId: movieId)
         let controller = MovieDetailController(with: view, viewModel: viewModel)
@@ -85,7 +79,7 @@ extension MovieListController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.item == ((viewModel.movieList.value?.results.count ?? 0) - 1) && viewModel.canFetchMore  {
+        if indexPath.item == (viewModel.movie.value.count - 1) && viewModel.canFetchMore  {
             setupFooterView()
             viewModel.getMoreData()
         }

@@ -7,33 +7,22 @@
 
 import Foundation
 
-/// The web http request methods
-public enum HTTPMethod {
-    
-    case get, post, put, delete, patch
+enum HTTPMethod: String {
+    case get
     
     var identifier: String {
-        switch self {
-        case .get: return "GET"
-        case .post: return "POST"
-        case .put: return "PUT"
-        case .delete: return "DELETE"
-        case .patch: return "PATCH"
-        }
+        return self.rawValue.uppercased()
     }
 }
 
 protocol Endpoint {
-    
     var httpMethod: HTTPMethod { get }
     var baseURLString: String { get }
     var path: String { get }
-//    var headers: [String: Any]? { get }
-//    var body: [String: Any]? { get }
 }
 
 extension Endpoint {
-
+    
     var url: String {
         return baseURLString + path
     }
@@ -52,37 +41,16 @@ enum BaseRouter: Endpoint {
     }
     
     var baseURLString: String {
-        switch self {
-        case .getMovieList:
-            return "https://api.themoviedb.org/3/"
-        case .getMovieDetail(let id):
-            return "https://api.themoviedb.org/3/movie/\(id)"
-        }
+        return Environment.getBaseUrl(key: .backendUrl)
     }
     
     var path: String {
         switch self {
         case .getMovieList(let pageNo):
-            return "discover/movie?api_key=f4824af0a09c59035f4fe92da98da1d6&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=\(pageNo)&with_watch_monetization_types=flatrate"
-        case .getMovieDetail:
-            return "?api_key=f4824af0a09c59035f4fe92da98da1d6&language=en-US"
+            return "discover/movie?api_key=\(Environment.getBaseUrl(key: .apiKey))&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=\(pageNo)&with_watch_monetization_types=flatrate"
+        case .getMovieDetail(let id):
+            return "movie/\(id)?api_key=\(Environment.getBaseUrl(key: .apiKey))&language=en-US"
         }
     }
-    
-//    var headers: [String: Any]? {
-//        switch self {
-//        case .getMovieList:
-//            return [:]
-//        case .getMovieDetail:
-//
-//        }
-//    }
-    
-//    var body: [String : Any]? {
-//        switch self {
-//        case .getMovieList:
-//            return [:]
-//        }
-//    }
 }
 

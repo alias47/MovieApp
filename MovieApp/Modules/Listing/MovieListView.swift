@@ -9,24 +9,11 @@ import UIKit
 
 final class MovieListView: UIView {
     
-    lazy var movieImage: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "image")
-        imageView.contentMode = .scaleAspectFill
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
-    }()
-    
     lazy var tableView: UITableView = {
-        let view = UITableView(frame: .zero, style: .grouped)
+        let view = UITableView()
         view.register(MovieListHeaderCell.self, forHeaderFooterViewReuseIdentifier: MovieListHeaderCell.identifier)
         view.register(MovieListTableViewCell.self, forCellReuseIdentifier: MovieListTableViewCell.identifier)
         view.separatorStyle = .none
-        view.allowsMultipleSelection = false
-        var frame = CGRect.zero
-        frame.size.height = .leastNormalMagnitude
-        view.tableHeaderView = UIView(frame: frame)
-        view.tableFooterView = UIView(frame: frame)
         view.showsVerticalScrollIndicator = false
         view.translatesAutoresizingMaskIntoConstraints = false
         return view

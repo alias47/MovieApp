@@ -1,0 +1,12 @@
+//
+//  Config.xcconfig
+//  MovieApp
+//
+//  Created by ebpearls on 23/09/2022.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+BACKEND_URL = https:/$()/api.themoviedb.org/3/
+API = f4824af0a09c59035f4fe92da98da1d6
